@@ -25,8 +25,8 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <p>Your IP Address is {ip} and you are currently in {city}, {state}.</p>
-        <p>More specifically, you are located at {latitude}° {longitude}°.</p>
+        <p>Your IP Address is <strong>{ip}</strong> and you are currently in <strong> {city}, {state}. </strong></p>
+        <p>More specifically, you are located at <strong>{latitude}°, {longitude}°</strong>.</p>
       </header>
     </div>
   );
