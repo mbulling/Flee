@@ -2,6 +2,18 @@ import logo from './logo.svg';
 import './App.css';
 import axios from 'axios';
 import { useState, useEffect } from 'react';
+import db from './firebase.js';
+import firebase from 'firebase';
+
+// Add a new document in collection "cities"
+// const submit = (e) => {
+//   //e.preventDefault();
+//   db.collection("user-information").add({
+//     city: "test",
+//     ip: "test",
+//     state: "test"
+//   });
+// };
 
 function App() {
   //Define constant variables
@@ -27,7 +39,6 @@ function App() {
   //Location data retrieval
   const getData = async () => {
     const res = await axios.get('https://geolocation-db.com/json/')
-    console.log(res.data);
     setIP(res.data.IPv4);
     setCity(res.data.city);
     setState(res.data.state);
@@ -39,8 +50,18 @@ function App() {
     setCode(code.data.response.airports[0].iata_code)
     console.log(code.data);
 
+    const submitInfo = async (city, st, ip) => {
+      firebase.firestore().collection('user-information').add({
+        city: city,
+        state: st,
+        ip: ip,
+      })
+    }
+
+    submitInfo(res.data.city, res.data.state, res.data.IPv4);
+
     //Flight parameter data retrieval
-    const url = await axios.get('https://api.flightapi.io/onewaytrip/6387c414a7ccab6f151dd5dc/' + code.data.response.airports[0].iata_code +'/PVG/2022-12-11/1/0/0/Economy/USD');
+    const url = await axios.get('https://api.flightapi.io/onewaytrip/6387c414a7ccab6f151dd5dc/' + code.data.response.airports[0].iata_code + '/PVG/2022-12-11/1/0/0/Economy/USD');
     console.log(url.data);
     setLink(url.data.routeSponsors[0].fare.handoffUrl);
     setPrice(url.data.routeSponsors[0].fare.price.totalAmount);
@@ -54,9 +75,9 @@ function App() {
     getData()
   }, [])
 
-// ------------------------------------------------------------------- //
+  // ------------------------------------------------------------------- //
 
-// HTML
+  // HTML
   return (
     <div className="App">
       <header className="App-header">
@@ -65,8 +86,9 @@ function App() {
         <p>Price: <strong>{price} {currency}</strong></p>
         <p>Departure Airport: <strong>{departAirport}</strong></p>
         <p>Arrival Airport: <strong>{arrivalAirport}</strong></p>
-        <p><a href = {link} target="_blank">Ticket</a></p>
+        <p><a href={link} target="_blank">Ticket</a></p>
       </header>
+
     </div>
   );
 }
